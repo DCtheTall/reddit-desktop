@@ -1,6 +1,7 @@
 package scraper
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,4 +30,14 @@ func GetSubredditPage(subreddit string) (io.ReadCloser, error) {
 		return nil, err
 	}
 	return resp.Body, nil
+}
+
+/*
+CovertResponseBodyToString useful for looking at HTML
+in the console
+*/
+func CovertResponseBodyToString(responseBody io.ReadCloser) string {
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(responseBody)
+	return buf.String()
 }

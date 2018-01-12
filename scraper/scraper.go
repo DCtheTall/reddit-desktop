@@ -11,7 +11,7 @@ func ScrapeSubredditForImage(subreddit string) error {
 		return err
 	}
 	defer resBody.Close()
-	urls, _ := GetPostUrlsFromHTML(resBody)
+	urls, _ := ScrapePostUrlsFromHTML(resBody)
 	fmt.Println(urls)
 	return nil
 }
