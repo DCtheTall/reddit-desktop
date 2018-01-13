@@ -1,7 +1,6 @@
 package scraper
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -15,36 +14,35 @@ This module parses HTML from the subreddit for image tags
 */
 
 /*
-AppendURLIfPostThumbnail returns list with new
-url if the anchor tag links to a post page
+AppendDataURLToResult appends the url to an image on the subreddit
+if the element contains a data-url to that image
 */
-func AppendURLIfPostThumbnail(previousResult []string, token html.Token) []string {
-	isThumbnail := false
+func AppendDataURLToResult(previousResult []string, token html.Token) []string {
+	containsLink := false
 	url := ""
 	for _, attr := range token.Attr {
 		if attr.Key == "class" {
-			isThumbnail = strings.Index(attr.Val, "thumbnail") != -1
+			containsLink = strings.Index(attr.Val, " thing") != -1
+			containsLink = containsLink && strings.Index(attr.Val, "link ") != -1
 		}
-		if attr.Key == "href" {
-			url = fmt.Sprintf("https://www.reddit.com%s", attr.Val)
+		if attr.Key == "data-url" && (strings.Index(attr.Val, ".png") != -1 || strings.Index(attr.Val, ".jpg") != -1) {
+			url = attr.Val
 		}
 	}
-	if isThumbnail && len(previousResult) < 20 {
+	if containsLink && url != "" {
 		return append(previousResult, url)
 	}
 	return previousResult
 }
 
 /*
-ScrapePostUrlsFromHTML get urls of post pages from the HTML
+ScrapeImgUrlsFromHTML get urls of post pages from the HTML
 of the subreddit
 */
-func ScrapePostUrlsFromHTML(responseBody io.ReadCloser) ([]string, error) {
-	tokenizer := html.NewTokenizer(responseBody)
+func ScrapeImgUrlsFromHTML(responseBody *io.ReadCloser) ([]string, error) {
+	tokenizer := html.NewTokenizer(*responseBody)
 	result := make([]string, 0, 0)
-	openingAnchorToken := html.Token{}
-	anchorTagOpen := false
-	hasImgChild := false
+
 	for {
 		nextToken := tokenizer.Next()
 		switch nextToken {
@@ -52,17 +50,8 @@ func ScrapePostUrlsFromHTML(responseBody io.ReadCloser) ([]string, error) {
 			return result, nil
 		case html.StartTagToken, html.EndTagToken:
 			token := tokenizer.Token()
-			switch {
-			case token.Data == "a" && strings.Index(token.String(), "<a") != -1:
-				anchorTagOpen = true
-				openingAnchorToken = token
-			case token.Data == "a" && strings.Index(token.String(), "a>") != -1:
-				anchorTagOpen = false
-				if hasImgChild {
-					result = AppendURLIfPostThumbnail(result, openingAnchorToken)
-				}
-			case token.Data == "img" && anchorTagOpen:
-				hasImgChild = true
+			if token.Data == "div" {
+				result = AppendDataUrlToResult(result, token)
 			}
 		}
 	}

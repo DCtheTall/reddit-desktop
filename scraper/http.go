@@ -2,7 +2,6 @@ package scraper
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -15,12 +14,12 @@ getting a subreddit view's HTML
 */
 
 /*
-GetSubredditPage makes GET request to r/<subreddit>
-returns open response body from GET request
+GetRedditPage gets the HTML for the Reddit
+page at the given URL
 */
-func GetSubredditPage(subreddit string) (io.ReadCloser, error) {
+func GetRedditPage(url string) (*io.ReadCloser, error) {
 	var client http.Client
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://www.reddit.com/r/%s", subreddit), nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +28,7 @@ func GetSubredditPage(subreddit string) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.Body, nil
+	return &resp.Body, nil
 }
 
 /*

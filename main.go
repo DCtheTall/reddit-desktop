@@ -1,6 +1,8 @@
 package main
 
 import (
+	// "daily-desktop/scraper"
+	// "fmt"
 	"daily-desktop/scraper"
 	"fmt"
 )
@@ -8,8 +10,10 @@ import (
 // TODO figure out error handling
 
 func main() {
-	err := scraper.ScrapeSubredditForImage("earthporn")
-	if err != nil {
-		fmt.Println(err)
+	errs := scraper.ScrapeSubredditForImage("earthporn")
+	if errs != nil && len(errs) > 0 {
+		for _, err := range errs {
+			fmt.Println(err)
+		}
 	}
 }
