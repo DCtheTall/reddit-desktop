@@ -51,7 +51,7 @@ func ScrapeImgUrlsFromHTML(responseBody *io.ReadCloser) ([]string, error) {
 		case html.StartTagToken, html.EndTagToken:
 			token := tokenizer.Token()
 			if token.Data == "div" {
-				result = AppendDataUrlToResult(result, token)
+				result = AppendDataURLToResult(result, token)
 			}
 		}
 	}
