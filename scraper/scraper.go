@@ -1,6 +1,10 @@
 package scraper
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"image"
+)
 
 /*
 
@@ -14,18 +18,26 @@ start by writing a function to request the
 /*
 ScrapeSubredditForImage will return image data when done
 */
-func ScrapeSubredditForImage(subreddit string) []error {
+func ScrapeSubredditForImages(subreddit string) ([]*image.Image, []error) {
 	url := fmt.Sprintf("https://www.reddit.com/r/%s", subreddit)
 	subredditBody, err := GetRedditPage(url)
 	if err != nil {
-		return []error{err}
+		return nil, []error{err}
 	}
 	defer (*subredditBody).Close()
 
 	urls, err := ScrapeImgUrlsFromHTML(subredditBody)
 	if err != nil {
-		return []error{err}
+		return nil, []error{err}
 	}
-	fmt.Println(urls)
-	return nil
+
+	if len(urls) > 0 {
+		_, err = GetImgFromURL(urls[0])
+		if err != nil {
+			return nil, []error{err}
+		}
+	} else {
+		return nil, []error{errors.New("No images available")}
+	}
+	return nil, nil
 }
