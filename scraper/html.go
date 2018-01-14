@@ -17,7 +17,7 @@ This module parses HTML from the subreddit for image tags
 AppendDataURLToResult appends the url to an image on the subreddit
 if the element contains a data-url to that image
 */
-func AppendDataURLToResult(previousResult []string, token html.Token) []string {
+func appendDataURLToResult(previousResult []string, token html.Token) []string {
 	containsLink := false
 	url := ""
 	for _, attr := range token.Attr {
@@ -51,7 +51,7 @@ func ScrapeImgUrlsFromHTML(responseBody *io.ReadCloser) ([]string, error) {
 		case html.StartTagToken, html.EndTagToken:
 			token := tokenizer.Token()
 			if token.Data == "div" {
-				result = AppendDataURLToResult(result, token)
+				result = appendDataURLToResult(result, token)
 			}
 		}
 	}

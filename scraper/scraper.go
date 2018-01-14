@@ -16,7 +16,8 @@ start by writing a function to request the
 */
 
 /*
-ScrapeSubredditForImage will return image data when done
+ScrapeSubredditForImages scrapes image data from links
+on the subreddit page
 */
 func ScrapeSubredditForImages(subreddit string) ([]*image.Image, []error) {
 	url := fmt.Sprintf("https://www.reddit.com/r/%s", subreddit)
@@ -31,13 +32,16 @@ func ScrapeSubredditForImages(subreddit string) ([]*image.Image, []error) {
 		return nil, []error{err}
 	}
 
-	if len(urls) > 0 {
-		_, err = GetImgFromURL(urls[0])
-		if err != nil {
-			return nil, []error{err}
-		}
-	} else {
-		return nil, []error{errors.New("No images available")}
+	for _, url := range urls {
+		fmt.Println(fmt.Sprintf("Scraped image url: %s", url))
 	}
-	return nil, nil
+
+	if len(urls) > 0 {
+		imgs, errs := GetImagesFromScrapedURLs(urls)
+		if len(errs) > 0 {
+			return nil, errs
+		}
+		return imgs, nil
+	}
+	return nil, []error{errors.New("No images available")}
 }
