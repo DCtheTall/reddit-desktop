@@ -8,6 +8,7 @@ import (
 	_ "image/png"
 	"io"
 	"net/http"
+	"strings"
 	"sync"
 )
 
@@ -54,27 +55,27 @@ func GetRedditPage(url string) (*io.ReadCloser, error) {
 getImgFromURL fetches an image at the given url and
 returns a pointer to an image object with the data
 */
-func getImgFromURL(url string) (*image.Image, error) {
+func getImgFromURL(url string) (*image.Image, string, error) {
 	var client http.Client
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	req.Header.Set("user-agent", "daily-desktop-bot")
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	defer resp.Body.Close()
 
-	img, _, err := image.Decode(resp.Body)
+	img, ext, err := image.Decode(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return &img, nil
+	return &img, ext, nil
 }
 
 /*
@@ -84,7 +85,7 @@ arrays
 */
 type imageCollector struct {
 	access sync.Mutex
-	data   []*image.Image
+	data   []*ScrapedImage
 	errors []error
 }
 
@@ -92,21 +93,30 @@ type imageCollector struct {
 GetImagesFromScrapedURLs gets images from the scraped
 source urls from the subreddit page
 */
-func GetImagesFromScrapedURLs(urls []string) ([]*image.Image, []error) {
+func GetImagesFromScrapedURLs(urls []string) ([]*ScrapedImage, []error) {
 	var wg sync.WaitGroup
-	images := imageCollector{data: make([]*image.Image, 0, 0)}
+	images := imageCollector{data: make([]*ScrapedImage, 0, 0)}
 	for _, url := range urls {
 		url := url
+		splitURL := strings.Split(url, "/")
+		name := splitURL[len(splitURL)-1]
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			img, err := getImgFromURL(url)
+			img, extension, err := getImgFromURL(url)
 			images.access.Lock()
 			if err != nil {
 				images.errors = append(images.errors, err)
 			} else {
 				fmt.Println(fmt.Sprintf("Successfully retrieved image from %s", url))
-				images.data = append(images.data, img)
+				images.data = append(
+					images.data,
+					&ScrapedImage{
+						img:       img,
+						name:      name,
+						extension: extension,
+					},
+				)
 			}
 			images.access.Unlock()
 		}()

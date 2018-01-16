@@ -3,7 +3,10 @@ package main
 import (
 	"daily-desktop/desktopimage"
 	"daily-desktop/scraper"
+	"fmt"
 	"log"
+	"os"
+	"time"
 )
 
 // TODO figure out error handling
@@ -15,10 +18,23 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	desktopimage.GetImageForDesktop(images)
+	img := desktopimage.GetImageForDesktop(images)
 
-	// Apple Script for setting bg:
-	// osascript -e 'tell application "Finder" to set desktop picture to "/Users/you/Pictures/Some Picture.jpg" as POSIX file'
+	filename, err := desktopimage.WriteImageToFile(img)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		time.Sleep(5e3 * time.Millisecond)
+		err := os.Remove(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(fmt.Sprintf("Deleted %s", img.GetName()))
+	}()
 
-	// out, _ := exec.Command("echo", "Hello World!").Output()
+	err = desktopimage.SetDesktopBackground(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
