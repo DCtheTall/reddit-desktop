@@ -1,8 +1,8 @@
 package main
 
 import (
+	"daily-desktop/desktopimage"
 	"daily-desktop/scraper"
-	"fmt"
 	"log"
 )
 
@@ -15,10 +15,10 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+	desktopimage.GetImageForDesktop(images)
 
-	// Temporary, images will be handed in module that sets background
-	for _, img := range images {
-		bounds := (*img).Bounds()
-		fmt.Println(bounds.Max.X, bounds.Max.Y)
-	}
+	// Apple Script for setting bg:
+	// osascript -e 'tell application "Finder" to set desktop picture to "/Users/you/Pictures/Some Picture.jpg" as POSIX file'
+
+	// out, _ := exec.Command("echo", "Hello World!").Output()
 }
