@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// TODO figure out error handling
-
 func main() {
 	argsWithoutProg := os.Args[1:]
 	if len(argsWithoutProg) == 0 {
