@@ -7,9 +7,8 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"reddit-desktop/scraper"
 	"time"
-
-	"github.com/DCtheTall/reddit-desktop/scraper"
 )
 
 /*
