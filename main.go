@@ -35,8 +35,11 @@ func main() {
 		log.Fatal(err)
 	}
 	defer func() {
+		err := recover()
+		log.Println(err)
+		fmt.Println()
 		time.Sleep(5e3 * time.Millisecond)
-		err := os.Remove(filename)
+		err = os.Remove(filename)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -45,6 +48,6 @@ func main() {
 
 	err = desktopimage.SetDesktopBackground(filename)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 }
