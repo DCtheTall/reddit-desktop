@@ -6,9 +6,10 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"reddit-desktop/desktopimage"
-	"reddit-desktop/scraper"
 	"time"
+
+	"github.com/DCtheTall/reddit-desktop/desktopimage"
+	"github.com/DCtheTall/reddit-desktop/scraper"
 )
 
 // TODO figure out error handling
