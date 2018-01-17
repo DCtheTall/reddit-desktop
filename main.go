@@ -34,7 +34,9 @@ func main() {
 	}
 	defer func() {
 		err := recover()
-		log.Println(err)
+		if err != nil {
+			log.Println(err)
+		}
 		fmt.Println()
 		time.Sleep(5e3 * time.Millisecond)
 		err = os.Remove(filename)
