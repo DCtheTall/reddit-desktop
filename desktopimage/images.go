@@ -14,8 +14,6 @@ import (
 /*
 GetImageForDesktop filters slice of image pointers and
 returns a random image suitable for the desktop
-
-TODO: let the minimum width (or height) be a cmd line argument
 */
 func GetImageForDesktop(images []*scraper.ScrapedImage) *scraper.ScrapedImage {
 	validImages := make([]*scraper.ScrapedImage, 0, 0)
@@ -29,7 +27,6 @@ func GetImageForDesktop(images []*scraper.ScrapedImage) *scraper.ScrapedImage {
 	fmt.Println(fmt.Sprintf("\nFiltered %d possible images out of %d images", len(validImages), len(images)))
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(validImages))
-	fmt.Println(index)
 	return validImages[index]
 }
 

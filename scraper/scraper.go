@@ -9,9 +9,6 @@ import (
 
 Scraper gets the image data from Reddit
 
-TODO parse comment pages for the link to the image,
-start by writing a function to request the
-
 */
 
 /*
