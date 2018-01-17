@@ -12,7 +12,7 @@ func setOSXBackground(filename string) error {
 		"/usr/bin/osascript",
 		"-e",
 		fmt.Sprintf(
-			`tell application "Finder" to set desktop picture to "%s" as POSIX file`,
+			`tell application "System Events" to tell every desktop to set picture to "%s"`,
 			filename,
 		),
 	)
@@ -39,5 +39,5 @@ func SetDesktopBackground(filename string) error {
 	case "windows":
 		return setWindowsBackground(filename)
 	}
-	return errors.New("Your operating system is not supported")
+	return errors.New("Your operating system is not yet supported")
 }

@@ -1,18 +1,28 @@
 package main
 
 import (
-	"daily-desktop/desktopimage"
-	"daily-desktop/scraper"
+	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"reddit-desktop/desktopimage"
+	"reddit-desktop/scraper"
 	"time"
 )
 
 // TODO figure out error handling
 
 func main() {
-	images, errs := scraper.ScrapeSubredditForImages("earthporn")
+	argsWithoutProg := os.Args[1:]
+	if len(argsWithoutProg) == 0 {
+		log.Fatal(errors.New("You must supply at least one subreddit to choose from"))
+	}
+	rand.Seed(time.Now().UnixNano())
+	index := rand.Intn(len(argsWithoutProg))
+	subreddit := argsWithoutProg[index]
+
+	images, errs := scraper.ScrapeSubredditForImages(subreddit)
 	if errs != nil && len(errs) > 0 {
 		for _, err := range errs {
 			log.Fatal(err)

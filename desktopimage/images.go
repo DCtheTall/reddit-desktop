@@ -1,13 +1,13 @@
 package desktopimage
 
 import (
-	"daily-desktop/scraper"
 	"fmt"
 	"image/jpeg"
 	"image/png"
 	"math/rand"
 	"os"
 	"path/filepath"
+	"reddit-desktop/scraper"
 	"time"
 )
 
