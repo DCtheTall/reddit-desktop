@@ -4,7 +4,14 @@ A subreddit scraper which sets your desktop background
 written in Go
 ---
 
-To build, run
+This project uses [dep](https://github.com/golang/dep) to ensure the
+integrity of its dependencies. To install dependencies run
+
+`dep ensure`
+
+in the root of the project directory to install dependencies.
+
+To build the app, run
 
 `go install reddit-desktop`
 
