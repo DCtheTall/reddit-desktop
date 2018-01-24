@@ -28,7 +28,7 @@ func ScrapeSubredditForImages(subreddit string) ([]*ScrapedImage, []error) {
 		return nil, []error{err}
 	}
 	for _, url := range urls {
-		fmt.Println(fmt.Sprintf("Scraped image url: %s", url))
+		fmt.Println("Scraped image url: ", url)
 	}
 
 	if len(urls) == 0 {

@@ -13,7 +13,8 @@ type option struct {
 	index    int
 }
 
-func findOptions(searchVals []string, list []string) (result map[string]option) {
+func findOptions(searchVals []string, list []string) map[string]option {
+	result := make(map[string]option)
 	for i, val := range list {
 		for _, searchVal := range searchVals {
 			if searchVal == val {
@@ -64,6 +65,7 @@ func ParseArgs(args []string) (subreddits []string, err error) {
 		return nil, errors.New("You must supply an argument after --limit")
 	}
 
+	// determining limit for cache
 	if options["--limit"].provided {
 		indexAfterLimit := options["limit"].index + 1
 		sizeAsStr := strings.ToLower(args[indexAfterLimit])
@@ -73,5 +75,19 @@ func ParseArgs(args []string) (subreddits []string, err error) {
 		}
 	}
 
-	return args, nil
+	// filtering subreddits from args
+	for i, arg := range args {
+		shouldSkip := false
+		for key, opt := range options {
+			shouldSkip = shouldSkip || (opt.provided && i == opt.index)
+			if key == "--limit" {
+				shouldSkip = shouldSkip || (opt.provided && i == opt.index+1)
+			}
+		}
+		if !shouldSkip {
+			subreddits = append(subreddits, arg)
+		}
+	}
+
+	return subreddits, nil
 }

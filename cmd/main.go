@@ -9,6 +9,7 @@ import (
 	"reddit-desktop/lib/args"
 	"reddit-desktop/lib/desktopimage"
 	"reddit-desktop/lib/scraper"
+	"strings"
 	"time"
 )
 
@@ -21,8 +22,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Scraping subreddits: ", strings.Join(subreddits, ", "))
 	rand.Seed(time.Now().UnixNano())
-	index := rand.Intn(len(argsWithoutProg))
+	index := rand.Intn(len(subreddits))
 	subreddit := subreddits[index]
 
 	images, errs := scraper.ScrapeSubredditForImages(subreddit)
@@ -48,7 +50,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(fmt.Sprintf("Deleted %s", img.GetName()))
+		fmt.Println("Deleted ", img.GetName())
 	}()
 
 	err = desktopimage.SetDesktopBackground(filename)

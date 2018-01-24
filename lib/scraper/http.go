@@ -47,7 +47,7 @@ func GetRedditPage(url string) (*io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(fmt.Sprintf("\nRequest for %s successful", url))
+	fmt.Println("\nRequest for ", url, " successful")
 	return &resp.Body, nil
 }
 
@@ -108,7 +108,7 @@ func GetImagesFromScrapedURLs(urls []string) ([]*ScrapedImage, []error) {
 			if err != nil {
 				images.errors = append(images.errors, err)
 			} else {
-				fmt.Println(fmt.Sprintf("Successfully retrieved image from %s", url))
+				fmt.Println("Successfully retrieved image from ", url)
 				images.data = append(
 					images.data,
 					&ScrapedImage{
