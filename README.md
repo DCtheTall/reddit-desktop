@@ -6,17 +6,15 @@ written in Go
 
 To build, run
 
-`go install reddit-desktop`
+`sh build.sh`
+
+It will compile into a directory in the root
+of this project called `release`.
 
 To run, change the working directory to the directory
 where the app was built and run
 
 `reddit-desktop <subreddit1> <subreddit2> ...`
-
-*Important note:*
-
-This app will write (and promptly delete) an image file to
-the directory it runs in. It will delete any image it successfully writes even if it encouter an error.
 
 ### Supported Operating Systems
 - OSX
@@ -24,6 +22,7 @@ the directory it runs in. It will delete any image it successfully writes even i
 ### TODO
 - Windows support
 - Linux support
+- Windows build script
 
 Dependencies:
 - golang.org/x/net/html
