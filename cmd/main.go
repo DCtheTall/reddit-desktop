@@ -6,8 +6,9 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"reddit-desktop/desktopimage"
-	"reddit-desktop/scraper"
+	"reddit-desktop/lib/args"
+	"reddit-desktop/lib/desktopimage"
+	"reddit-desktop/lib/scraper"
 	"time"
 )
 
@@ -16,9 +17,13 @@ func main() {
 	if len(argsWithoutProg) == 0 {
 		log.Fatal(errors.New("You must supply at least one subreddit to choose from"))
 	}
+	subreddits, err := args.ParseArgs(argsWithoutProg)
+	if err != nil {
+		log.Fatal(err)
+	}
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(argsWithoutProg))
-	subreddit := argsWithoutProg[index]
+	subreddit := subreddits[index]
 
 	images, errs := scraper.ScrapeSubredditForImages(subreddit)
 	if errs != nil && len(errs) > 0 {

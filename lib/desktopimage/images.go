@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"reddit-desktop/scraper"
+	"reddit-desktop/lib/scraper"
 	"time"
 )
 
