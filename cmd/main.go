@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"reddit-desktop/lib/args"
+	"reddit-desktop/lib/cache"
 	"reddit-desktop/lib/desktopimage"
 	"reddit-desktop/lib/scraper"
 	"strings"
@@ -18,10 +19,20 @@ func main() {
 	if len(argsWithoutProg) == 0 {
 		log.Fatal(errors.New("You must supply at least one subreddit to choose from"))
 	}
-	subreddits, err := args.ParseArgs(argsWithoutProg)
+
+	subreddits, options, err := args.ParseArgs(argsWithoutProg)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	if options[args.EmptyCache] {
+		err = cache.EmptyCache()
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	fmt.Println("Scraping subreddits: ", strings.Join(subreddits, ", "))
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(subreddits))
@@ -39,18 +50,23 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer func() {
 		err := recover()
 		if err != nil {
 			log.Println(err)
 		}
+
 		fmt.Println()
-		time.Sleep(5e3 * time.Millisecond)
-		err = os.Remove(filename)
-		if err != nil {
-			log.Fatal(err)
+		time.Sleep(2e3 * time.Millisecond)
+
+		if !options[args.Cache] {
+			err = os.Remove(filename)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Deleted ", filename)
 		}
-		fmt.Println("Deleted ", img.GetName())
 	}()
 
 	err = desktopimage.SetDesktopBackground(filename)

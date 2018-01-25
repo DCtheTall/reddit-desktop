@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reddit-desktop/lib/scraper"
+	"strings"
 	"time"
 )
 
@@ -39,7 +40,10 @@ func WriteImageToFile(image *scraper.ScrapedImage) (string, error) {
 		return "", err
 	}
 	cwd := filepath.Dir(ex)
-	filename := fmt.Sprintf("%s/%s", cwd, image.GetName())
+	splitImgName := strings.Split(image.GetName(), ".")
+	extension := splitImgName[len(splitImgName)-1]
+	nowAsISO := time.Now().UTC().Format("2006-01-02T15:04:05-0700")
+	filename := fmt.Sprintf("%s/data/%s.%s", cwd, nowAsISO, extension)
 	file, err := os.Create(filename)
 	if err != nil {
 		return "", err

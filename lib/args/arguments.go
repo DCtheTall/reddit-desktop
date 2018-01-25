@@ -2,92 +2,65 @@ package args
 
 import (
 	"errors"
-	"strconv"
-	"strings"
+	"fmt"
 )
 
-var acceptedOptions = []string{"--cache", "--limit"}
+const (
+	// Cache image option
+	Cache = "--save"
+	// EmptyCache option
+	EmptyCache = "--empty"
+)
 
-type option struct {
-	provided bool
-	index    int
-}
+var acceptedOptions = []string{Cache, EmptyCache}
 
-func findOptions(searchVals []string, list []string) map[string]option {
-	result := make(map[string]option)
-	for i, val := range list {
+/*
+Options provided maps for which option is provided
+*/
+type Options map[string]bool
+
+func findOptions(searchVals []string, list []string) Options {
+	opts := make(Options)
+	for _, val := range list {
 		for _, searchVal := range searchVals {
 			if searchVal == val {
-				result[searchVal] = option{provided: true, index: i}
+				opts[searchVal] = true
 			}
 		}
 	}
-	return result
-}
-
-func getCacheLimitWithUnits(limit string) (int, string, error) {
-	kbIndex := strings.Index("kb", limit)
-	mbIndex := strings.Index("mb", limit)
-	gbIndex := strings.Index("gb", limit)
-	unit := ""
-	strippedSizeStr := ""
-	if kbIndex != -1 {
-		unit = "kb"
-		strippedSizeStr = string([]byte(limit)[:kbIndex])
-	} else if mbIndex != -1 {
-		unit = "mb"
-		strippedSizeStr = string([]byte(limit)[:mbIndex])
-	} else if gbIndex != -1 {
-		unit = "gb"
-		strippedSizeStr = string([]byte(limit)[:gbIndex])
-	} else {
-		unit = "files"
-		strippedSizeStr = limit
-	}
-	size, err := strconv.Atoi(strippedSizeStr)
-	if err != nil {
-		return 0, "", errors.New("Invalid value after --limit option")
-	}
-	return size, unit, nil
+	return opts
 }
 
 /*
 ParseArgs parse the provided arguments
 */
-func ParseArgs(args []string) (subreddits []string, err error) {
-	options := findOptions(acceptedOptions, args)
+func ParseArgs(args []string) (subreddits []string, opts Options, err error) {
+	opts = findOptions(acceptedOptions, args)
 
-	// validating
-	switch true {
-	case options["--limit"].provided && !options["--cache"].provided:
-		return nil, errors.New("You must provide --cache option in order to specify a limit")
-	case options["--limit"].index == len(args)-1:
-		return nil, errors.New("You must supply an argument after --limit")
+	providedOptions := 0
+	for _, optProvided := range opts {
+		if optProvided {
+			providedOptions++
+		}
 	}
 
-	// determining limit for cache
-	if options["--limit"].provided {
-		indexAfterLimit := options["limit"].index + 1
-		sizeAsStr := strings.ToLower(args[indexAfterLimit])
-		_, _, err := getCacheLimitWithUnits(sizeAsStr)
-		if err != nil {
-			return nil, err
-		}
+	// validating
+	if providedOptions > 1 {
+		return nil, nil, fmt.Errorf("You cannot use the %s and %s options at the same time", Cache, EmptyCache)
 	}
 
 	// filtering subreddits from args
-	for i, arg := range args {
-		shouldSkip := false
-		for key, opt := range options {
-			shouldSkip = shouldSkip || (opt.provided && i == opt.index)
-			if key == "--limit" {
-				shouldSkip = shouldSkip || (opt.provided && i == opt.index+1)
-			}
-		}
-		if !shouldSkip {
+	for _, arg := range args {
+		if !opts[arg] {
 			subreddits = append(subreddits, arg)
 		}
 	}
 
-	return subreddits, nil
+	if len(subreddits) == 0 && !opts[EmptyCache] {
+		return nil, nil, errors.New("You must provide at least one subreddit")
+	} else if len(subreddits) > 0 && opts[EmptyCache] {
+		return nil, nil, fmt.Errorf("You cannot provide any subreddits with the %s option", EmptyCache)
+	}
+
+	return subreddits, opts, nil
 }
