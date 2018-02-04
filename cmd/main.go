@@ -46,7 +46,7 @@ func main() {
 	}
 	img := desktopimage.GetImageForDesktop(images)
 
-	filename, err := desktopimage.WriteImageToFile(img)
+	filename, err := cache.Save(img)
 	if err != nil {
 		log.Fatal(err)
 	}

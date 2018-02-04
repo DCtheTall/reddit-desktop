@@ -2,9 +2,46 @@ package cache
 
 import (
 	"fmt"
+	"image/jpeg"
+	"image/png"
 	"os"
 	"path/filepath"
+	"reddit-desktop/lib/scraper"
 )
+
+/*
+Save saves the image in the data/ directory located
+in the directory the app runs in
+*/
+func Save(image *scraper.ScrapedImage) (string, error) {
+	ex, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+	cwd := filepath.Dir(ex)
+	filename := fmt.Sprintf("%s/data/%s", cwd, image.GetName())
+	file, err := os.Create(filename)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		fmt.Println(fmt.Sprintf("Successfully saved %s", filename))
+		file.Close()
+	}()
+
+	switch image.GetExtension() {
+	case "jpeg":
+		err = jpeg.Encode(file, *image.GetImage(), &jpeg.Options{jpeg.DefaultQuality})
+	case "png":
+		err = png.Encode(file, *image.GetImage())
+	}
+	if err != nil {
+		return "", err
+	}
+
+	return filename, nil
+}
 
 /*
 EmptyCache of all stored images
