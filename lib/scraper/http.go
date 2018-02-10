@@ -95,7 +95,7 @@ source urls from the subreddit page
 */
 func GetImagesFromScrapedURLs(urls []string) ([]*ScrapedImage, []error) {
 	var wg sync.WaitGroup
-	images := imageCollector{data: make([]*ScrapedImage, 0, 0)}
+	images := imageCollector{}
 	for _, url := range urls {
 		url := url
 		splitURL := strings.Split(url, "/")

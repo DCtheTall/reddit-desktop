@@ -33,6 +33,22 @@ func main() {
 		return
 	}
 
+	if options[args.Undo] {
+		filename, err := cache.GetPreviousImagePath()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		desktopimage.SetDesktopBackground(filename)
+
+		err = cache.Pop()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return
+	}
+
 	fmt.Println("Scraping subreddits: ", strings.Join(subreddits, ", "))
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(subreddits))
