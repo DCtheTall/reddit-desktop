@@ -9,7 +9,7 @@ integrity of its dependencies. To install dependencies run
 
 `dep ensure`
 
-in the root of the project directory to install dependencies.
+in the root of the project.
 
 To build the app, run
 
