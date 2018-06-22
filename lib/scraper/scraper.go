@@ -16,7 +16,7 @@ ScrapeSubredditForImages scrapes image data from links
 on the subreddit page
 */
 func ScrapeSubredditForImages(subreddit string) ([]*ScrapedImage, []error) {
-	url := fmt.Sprintf("https://www.reddit.com/r/%s", subreddit)
+	url := fmt.Sprintf("https://old.reddit.com/r/%s", subreddit)
 	subredditBody, err := GetRedditPage(url)
 	if err != nil {
 		return nil, []error{err}
