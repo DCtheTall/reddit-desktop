@@ -8,8 +8,8 @@ import (
 )
 
 func setOSXBackground(filename string) error {
-	return exec.Command("/usr/bin/osascript", "-e", fmt.Sprintf(
-		`tell application "System Events" to tell every desktop to set picture to "%s"`, filename)).Run()
+	return exec.Command("/usr/bin/osascript", "-e",
+		fmt.Sprintf(`tell application "System Events" to tell every desktop to set picture to %q`, filename)).Run()
 }
 
 func setLinuxBackground(filename string) error {
