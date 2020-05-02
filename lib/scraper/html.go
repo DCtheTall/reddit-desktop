@@ -41,16 +41,14 @@ of the subreddit
 */
 func ScrapeImgUrlsFromHTML(responseBody *io.ReadCloser) ([]string, error) {
 	tokenizer := html.NewTokenizer(*responseBody)
-	result := make([]string, 0, 0)
+	result := []string{}
 
 	for {
-		nextToken := tokenizer.Next()
-		switch nextToken {
+		switch tokenizer.Next() {
 		case html.ErrorToken: // results slice at the end of the for loop
 			return result, nil
 		case html.StartTagToken, html.EndTagToken:
-			token := tokenizer.Token()
-			if token.Data == "div" {
+			if token := tokenizer.Token(); token.Data == "div" {
 				result = appendDataURLToResult(result, token)
 			}
 		}

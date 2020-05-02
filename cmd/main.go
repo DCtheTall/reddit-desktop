@@ -30,7 +30,6 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		return
 	}
 
 	if options[args.Undo] {
@@ -38,15 +37,10 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		desktopimage.SetDesktopBackground(filename)
-
-		err = cache.Pop()
-		if err != nil {
+		if err := cache.Pop(); err != nil {
 			log.Fatal(err)
 		}
-
-		return
 	}
 
 	fmt.Println("Scraping subreddits: ", strings.Join(subreddits, ", "))
@@ -68,8 +62,7 @@ func main() {
 	}
 
 	defer func() {
-		err := recover()
-		if err != nil {
+		if err := recover(); err != nil {
 			log.Println(err)
 		}
 
@@ -77,16 +70,15 @@ func main() {
 		time.Sleep(2e3 * time.Millisecond)
 
 		if !options[args.Cache] {
-			err = os.Remove(filename)
-			if err != nil {
+			if err := os.Remove(filename); err != nil {
 				log.Fatal(err)
 			}
 			fmt.Println("Deleted ", filename)
 		}
 	}()
 
-	err = desktopimage.SetDesktopBackground(filename)
-	if err != nil {
+	if err := desktopimage.SetDesktopBackground(filename); err != nil {
 		log.Panic(err)
 	}
+	fmt.Println("Done")
 }

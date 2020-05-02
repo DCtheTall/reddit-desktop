@@ -34,9 +34,5 @@ func ScrapeSubredditForImages(subreddit string) ([]*ScrapedImage, []error) {
 	if len(urls) == 0 {
 		return nil, []error{errors.New("No images available")}
 	}
-	imgs, errs := GetImagesFromScrapedURLs(urls)
-	if len(errs) > 0 {
-		return nil, errs
-	}
-	return imgs, nil
+	return GetImagesFromScrapedURLs(urls)
 }

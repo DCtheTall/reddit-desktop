@@ -14,14 +14,13 @@ returns a random image suitable for the desktop
 func GetImageForDesktop(images []*scraper.ScrapedImage) *scraper.ScrapedImage {
 	validImages := make([]*scraper.ScrapedImage, 0, 0)
 	for _, scrapedImg := range images {
-		img := scrapedImg.GetImage()
-		bounds := (*img).Bounds()
+		img := *scrapedImg.GetImage()
+		bounds := img.Bounds()
 		if bounds.Max.X > 1000 {
 			validImages = append(validImages, scrapedImg)
 		}
 	}
 	fmt.Println(fmt.Sprintf("\nFiltered %d possible images out of %d images", len(validImages), len(images)))
 	rand.Seed(time.Now().UnixNano())
-	index := rand.Intn(len(validImages))
-	return validImages[index]
+	return validImages[rand.Intn(len(validImages))]
 }

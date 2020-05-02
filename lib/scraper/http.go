@@ -36,7 +36,7 @@ page at the given URL
 returned response body is still open
 */
 func GetRedditPage(url string) (*io.ReadCloser, error) {
-	fmt.Println(fmt.Sprintf("Requesting HTML from %s", url))
+	fmt.Println("Requesting HTML from ", url)
 	var client http.Client
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -103,22 +103,18 @@ func GetImagesFromScrapedURLs(urls []string) ([]*ScrapedImage, []error) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			img, extension, err := getImgFromURL(url)
 			images.access.Lock()
-			if err != nil {
+			defer images.access.Unlock()
+			if img, extension, err := getImgFromURL(url); err != nil {
 				images.errors = append(images.errors, err)
 			} else {
 				fmt.Println("Successfully retrieved image from ", url)
-				images.data = append(
-					images.data,
-					&ScrapedImage{
-						img:       img,
-						name:      name,
-						extension: extension,
-					},
-				)
+				images.data = append(images.data, &ScrapedImage{
+					img:       img,
+					name:      name,
+					extension: extension,
+				})
 			}
-			images.access.Unlock()
 		}()
 	}
 	wg.Wait()
