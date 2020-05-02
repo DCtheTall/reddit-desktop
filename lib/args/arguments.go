@@ -57,14 +57,13 @@ func ParseArgs(args []string) (subreddits []string, opts Options, err error) {
 		}
 	}
 
-	switch true {
-	case len(subreddits) > 0 && opts[EmptyCache]:
+	if len(subreddits) > 0 && opts[EmptyCache] {
 		return nil, nil, fmt.Errorf("You cannot provide any subreddits with the %s option", EmptyCache)
-	case len(subreddits) > 0 && opts[Undo]:
+	} else if len(subreddits) > 0 && opts[Undo] {
 		return nil, nil, fmt.Errorf("You cannot provide any subreddits with the %s option", Undo)
-	case len(subreddits) == 0 && opts[Cache]:
+	} else if len(subreddits) == 0 && opts[Cache] {
 		return nil, nil, fmt.Errorf("You must provide at least one subreddit with the %s option", Cache)
-	case len(subreddits) == 0 && providedOptions == 0:
+	} else if len(subreddits) == 0 && providedOptions == 0 {
 		return nil, nil, fmt.Errorf("You must provide at least one subreddit")
 	}
 	return subreddits, opts, nil

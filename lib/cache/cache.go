@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
 	"image/jpeg"
 	"image/png"
@@ -52,6 +53,8 @@ func Save(image *scraper.ScrapedImage) (string, error) {
 		err = jpeg.Encode(file, *image.GetImage(), &jpeg.Options{jpeg.DefaultQuality})
 	case "png":
 		err = png.Encode(file, *image.GetImage())
+	default:
+		return "", errors.New("Unsupported image extension: " + image.GetExtension())
 	}
 	if err != nil {
 		return "", err
@@ -84,8 +87,7 @@ func EmptyCache() error {
 	}
 
 	for _, name := range names {
-		err = os.RemoveAll(filepath.Join(dirname, name))
-		if err != nil {
+		if err := os.RemoveAll(filepath.Join(dirname, name)); err != nil {
 			return err
 		}
 	}
@@ -132,18 +134,12 @@ func GetPreviousImagePath() (string, error) {
 }
 
 /*
-Pop pop the cache of the most recent image
+Pop the cache of the most recent image
 */
 func Pop() error {
 	filename, err := getPreviousImage(1)
 	if err != nil {
 		return err
 	}
-
-	err = os.RemoveAll(filename)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return os.RemoveAll(filename)
 }
